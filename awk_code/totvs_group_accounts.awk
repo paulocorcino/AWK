@@ -1,6 +1,7 @@
 BEGIN {
     ln = -1;
     cap = 0;
+    pause = -1;
     id = "";
 
     print "grupoid;id;username;situacao;"
@@ -15,11 +16,14 @@ BEGIN {
 
     if($0 ~ /Tipo de impressão/){ # end use info
 	    ln = -1; 
+        pause = -1;
         cap = 0;
     }
 
     if($0 ~ /LGRL[[:digit:]][[:digit:]]\.BMP/) { # pause capture
         cap = 0;
+        if(pause == 0)
+            pause = 1;
     }
 
     if(index($0, ":") > 0 && cap >= 1) {
@@ -70,8 +74,9 @@ BEGIN {
 
     if(cap == 1) {
 
-        if(trim($0) == "Usuários                           :") {
+        if(trim($0) == "Usuários                           :" || pause == 1) {
             cap = 2;
+            pause = 0;
         }
 
     } 
